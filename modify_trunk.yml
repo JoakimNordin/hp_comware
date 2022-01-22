@@ -1,0 +1,29 @@
+- name:  remove and add existing VLAN to trunk
+  hosts: HP_Comware
+  gather_facts: no
+
+  vars:
+    switch_off: "{{ switch_off }}"
+
+  tasks:
+    - name: remove peering vlans from port
+      raw: |
+            system-view
+            interface Ten-GigabitEthernet 1/0/6
+            undo port trunk permit vlan 3990
+            undo port trunk permit vlan 3991
+            undo port trunk permit vlan 3992
+            quit
+            save
+      when: switch_off == "Yes"
+
+    - name: add peering vlans to port
+      raw: |
+            system-view
+            interface Ten-GigabitEthernet 1/0/6
+            port trunk permit vlan 3990
+            port trunk permit vlan 3991
+            port trunk permit vlan 3992
+            quit
+            save
+      when: switch_off == "No"
